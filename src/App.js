@@ -31,7 +31,6 @@ class App extends React.Component {
                         currentUser: snapShot.id,
                         ...snapShot.data(),
                     });
-                    console.log(this.state);
                 });
             }
             setCurrentUser(userAuth);
