@@ -9,12 +9,8 @@ import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sigin-in-and-sign-up/sigin-in-and-sign-up.component';
 import CheckoutPage from './pages/checkout/checkout.component';
 
-import {
-    auth,
-    createUserProfileDocument,
-} from './firebase/firebase.utils';
-import { setCurrentUser } from './redux/user/user.action';
 import { selectCurrentUser } from './redux/user/user.selectors';
+import { checkUserSession } from './redux/user/user.action';
 
 import './App.css';
 
@@ -22,27 +18,8 @@ class App extends React.Component {
     unsubscribeFromAuth = null;
 
     componentDidMount() {
-        const { setCurrentUser} = this.props;
-
-        this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-            if (userAuth) {
-                const userRef = await createUserProfileDocument(userAuth);
-
-                userRef.onSnapshot((snapShot) => {
-                    setCurrentUser({
-                        currentUser: snapShot.id,
-                        ...snapShot.data(),
-                    });
-                });
-            }
-            setCurrentUser(userAuth);
-
-            // 存储数据到 firestore
-            // addCollectionAndDoucments(
-            //     'collections',
-            //     collectionArry.map(({ title, items }) => ({ title, items }))
-            // );
-        });
+        const { checkUserSession } = this.props;
+        checkUserSession();
     }
 
     componentWillUnmount() {
@@ -78,8 +55,8 @@ const mapStateToProps = createStructuredSelector({
     currentUser: selectCurrentUser,
 });
 
-const mapDispathToProps = (dispath) => ({
-    setCurrentUser: (user) => dispath(setCurrentUser(user)),
+const mapDispatchToProps = (dispatch) => ({
+    checkUserSession: () => dispatch(checkUserSession()),
 });
 
-export default connect(mapStateToProps, mapDispathToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
